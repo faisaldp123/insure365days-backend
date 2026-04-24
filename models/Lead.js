@@ -7,9 +7,10 @@ const leadSchema = new mongoose.Schema(
     mobile: String,
 
     assignedTo: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  default: null, // ✅ ADD THIS
+},
 
     status: {
       type: String,

@@ -13,6 +13,7 @@ exports.uploadLeads = async (req, res) => {
     name: item.name,
     email: item.email,
     mobile: item.mobile,
+    assignedTo: null,
   }));
 
   await Lead.insertMany(leads);
@@ -22,12 +23,24 @@ exports.uploadLeads = async (req, res) => {
 
 // Get Leads
 exports.getLeads = async (req, res) => {
-  const leads =
-    req.user.role === "admin"
-      ? await Lead.find().populate("assignedTo", "name")
-      : await Lead.find({ assignedTo: req.user.id });
+  try {
+    let leads;
 
-  res.json(leads);
+    if (req.user.role === "admin") {
+      leads = await Lead.find()
+        .populate("assignedTo", "name")
+        .lean();
+    } else {
+      leads = await Lead.find({
+        assignedTo: req.user.id,
+      }).lean();
+    }
+
+    res.json(leads);
+  } catch (err) {
+    console.error("GET LEADS ERROR:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
 };
 
 // Assign Leads
