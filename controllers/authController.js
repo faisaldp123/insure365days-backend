@@ -14,7 +14,12 @@ const generateToken = (user) => {
 // ✅ REGISTER
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
+
+    // ✅ Check admin access
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ msg: "Only admin can create employees" });
+    }
 
     // Validation
     if (!name || !email || !password) {
@@ -30,15 +35,16 @@ exports.register = async (req, res) => {
     // Hash password
     const hashed = await bcrypt.hash(password, 10);
 
+    // ✅ Force role = employee (no override)
     const user = await User.create({
       name,
       email,
       password: hashed,
-      role: role || "employee",
+      role: "employee",
     });
 
     res.status(201).json({
-      msg: "User registered successfully",
+      msg: "Employee created successfully",
       user: {
         id: user._id,
         name: user.name,
