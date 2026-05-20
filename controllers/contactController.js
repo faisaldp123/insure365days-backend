@@ -1,11 +1,45 @@
 const Contact = require("../models/Contact");
 
+// SAVE CONTACT
 exports.saveContact = async (req, res) => {
-  const contact = await Contact.create(req.body);
-  res.json(contact);
+  try {
+    const {
+      name,
+      email,
+      mobile,
+      insuranceType,
+      message,
+    } = req.body;
+
+    const contact = await Contact.create({
+      name,
+      email,
+      mobile,
+      insuranceType, // ✅ SAVE FIELD
+      message,
+    });
+
+    res.json(contact);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      msg: "Server error",
+    });
+  }
 };
 
+// GET CONTACTS
 exports.getContacts = async (req, res) => {
-  const contacts = await Contact.find().sort({ createdAt: -1 });
-  res.json(contacts);
+  try {
+    const contacts = await Contact.find().sort({
+      createdAt: -1,
+    });
+
+    res.json(contacts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      msg: "Server error",
+    });
+  }
 };
