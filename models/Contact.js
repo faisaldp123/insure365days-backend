@@ -8,33 +8,9 @@ const contactSchema = new mongoose.Schema(
 
     mobile: String,
 
-    insuranceType: String,
+    insuranceType: String, // ✅ NEW FIELD
 
     message: String,
-
-    assignedTo: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      default: null,
-    },
-
-    status: {
-      type: String,
-      enum: ["new", "interested", "not_interested", "follow_up"],
-      default: "new",
-    },
-
-    callStatus: {
-      type: String,
-      enum: ["pending", "picked", "not_picked"],
-      default: "pending",
-    },
-
-    callDuration: String,
-
-    feedback: String,
-
-    followUpDate: Date,
   },
   { timestamps: true }
 );
