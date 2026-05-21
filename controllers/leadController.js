@@ -35,19 +35,46 @@ exports.uploadLeads = async (req, res) => {
 // Get Leads
 exports.getLeads = async (req, res) => {
   try {
-    let leads;
+    let excelLeads = [];
+    let contactLeads = [];
 
     if (req.user.role === "admin") {
-      leads = await Lead.find()
+      excelLeads = await Lead.find()
+        .populate("assignedTo", "name")
+        .lean();
+
+      contactLeads = await Contact.find()
         .populate("assignedTo", "name")
         .lean();
     } else {
-      leads = await Lead.find({
+      excelLeads = await Lead.find({
+        assignedTo: req.user.id,
+      }).lean();
+
+      contactLeads = await Contact.find({
         assignedTo: req.user.id,
       }).lean();
     }
 
-    res.json(leads);
+    const allLeads = [
+      ...excelLeads.map((lead) => ({
+        ...lead,
+        source: "excel",
+      })),
+
+      ...contactLeads.map((lead) => ({
+        ...lead,
+        source: "contact",
+      })),
+    ];
+
+    allLeads.sort(
+      (a, b) =>
+        new Date(b.createdAt) -
+        new Date(a.createdAt)
+    );
+
+    res.json(allLeads);
   } catch (err) {
     console.error("GET LEADS ERROR:", err);
 
