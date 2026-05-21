@@ -17,12 +17,14 @@ exports.protect = (req, res, next) => {
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      req.user = {
-        id: decoded.id,
-        role: decoded.role,
-      };
+console.log("DECODED TOKEN:", decoded);
 
-      next();
+req.user = {
+  id: decoded.id,
+  role: decoded.role,
+};
+
+next();
     } catch (err) {
       console.log("TOKEN ERROR:", err.message);
       return res.status(401).json({ msg: "Invalid token" });
@@ -33,8 +35,14 @@ exports.protect = (req, res, next) => {
 };
 
 exports.adminOnly = (req, res, next) => {
+  console.log("ADMIN CHECK USER:", req.user);
+
   if (!req.user || req.user.role !== "admin") {
-    return res.status(403).json({ msg: "Admin only" });
+    return res.status(403).json({
+      msg: "Admin only",
+      user: req.user,
+    });
   }
+
   next();
 };
