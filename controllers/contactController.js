@@ -15,19 +15,13 @@ exports.saveContact = async (req, res) => {
       name,
       email,
       mobile,
-      insuranceType,
+      insuranceType, // ✅ SAVE FIELD
       message,
-
-      assignedTo: null,
-
-      status: "new",
-      callStatus: "pending",
     });
 
     res.json(contact);
   } catch (err) {
     console.error(err);
-
     res.status(500).json({
       msg: "Server error",
     });
@@ -37,16 +31,13 @@ exports.saveContact = async (req, res) => {
 // GET CONTACTS
 exports.getContacts = async (req, res) => {
   try {
-    const contacts = await Contact.find()
-      .populate("assignedTo", "name")
-      .sort({
-        createdAt: -1,
-      });
+    const contacts = await Contact.find().sort({
+      createdAt: -1,
+    });
 
     res.json(contacts);
   } catch (err) {
     console.error(err);
-
     res.status(500).json({
       msg: "Server error",
     });
