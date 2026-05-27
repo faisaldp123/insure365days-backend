@@ -101,6 +101,9 @@ exports.assignLeads = async (req, res) => {
       });
     }
 
+    
+
+
     // Update Excel Leads
     await Lead.updateMany(
       {
@@ -129,6 +132,77 @@ exports.assignLeads = async (req, res) => {
 
     res.status(500).json({
       msg: "Assignment failed",
+    });
+  }
+};
+
+    // Delete Single Lead
+exports.deleteLead = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    let deleted = await Lead.findByIdAndDelete(id);
+
+    if (!deleted) {
+      deleted = await Contact.findByIdAndDelete(id);
+    }
+
+    if (!deleted) {
+      return res.status(404).json({
+        msg: "Lead not found",
+      });
+    }
+
+    res.json({
+      msg: "Lead deleted successfully",
+    });
+  } catch (err) {
+    console.error("DELETE LEAD ERROR:", err);
+
+    res.status(500).json({
+      msg: "Delete failed",
+    });
+  }
+};
+
+  //Delete All Leads (Excel / Contact / Both)
+exports.deleteAllLeads = async (req, res) => {
+  try {
+    const { type } = req.body;
+
+    if (type === "excel") {
+      await Lead.deleteMany({});
+
+      return res.json({
+        msg: "All Excel leads deleted successfully",
+      });
+    }
+
+    if (type === "contact") {
+      await Contact.deleteMany({});
+
+      return res.json({
+        msg: "All Contact leads deleted successfully",
+      });
+    }
+
+    if (type === "all") {
+      await Lead.deleteMany({});
+      await Contact.deleteMany({});
+
+      return res.json({
+        msg: "All leads deleted successfully",
+      });
+    }
+
+    return res.status(400).json({
+      msg: "Invalid type. Use excel, contact or all",
+    });
+  } catch (err) {
+    console.error("DELETE ALL LEADS ERROR:", err);
+
+    res.status(500).json({
+      msg: "Delete failed",
     });
   }
 };
