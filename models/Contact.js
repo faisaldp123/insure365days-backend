@@ -7,8 +7,16 @@ const contactSchema = new mongoose.Schema(
     email: String,
 
     mobile: String,
+    alternativeMobile: String,
+    dob: String,
 
     insuranceType: String,
+    brandType: String,
+    termAndPpt: String,
+    applicationNumber: String,
+    nomineeName: String,
+    nomineeDob: String,
+    shortAddress: String,
 
     message: String,
 
