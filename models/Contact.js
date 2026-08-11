@@ -19,6 +19,7 @@ const contactSchema = new mongoose.Schema(
     shortAddress: String,
 
     message: String,
+    remarks: String,
 
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,

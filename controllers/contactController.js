@@ -17,6 +17,7 @@ exports.saveContact = async (req, res) => {
       nomineeDob,
       shortAddress,
       message,
+      remarks,
     } = req.body;
 
     const contact = await Contact.create({
@@ -33,6 +34,7 @@ exports.saveContact = async (req, res) => {
       nomineeDob,
       shortAddress,
       message,
+      remarks,
 
       assignedTo: null,
 
