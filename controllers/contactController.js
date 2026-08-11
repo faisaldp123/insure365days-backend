@@ -70,3 +70,30 @@ exports.getContacts = async (req, res) => {
     });
   }
 };
+
+// DELETE ONE CONTACT FORM SUBMISSION
+exports.deleteContact = async (req, res) => {
+  try {
+    const contact = await Contact.findByIdAndDelete(req.params.id);
+
+    if (!contact) {
+      return res.status(404).json({ msg: "Contact not found" });
+    }
+
+    res.json({ msg: "Contact deleted successfully" });
+  } catch (err) {
+    console.error("DELETE CONTACT ERROR:", err);
+    res.status(500).json({ msg: "Delete failed" });
+  }
+};
+
+// DELETE ALL CONTACT FORM SUBMISSIONS
+exports.deleteAllContacts = async (req, res) => {
+  try {
+    await Contact.deleteMany({});
+    res.json({ msg: "All contact submissions deleted successfully" });
+  } catch (err) {
+    console.error("DELETE ALL CONTACTS ERROR:", err);
+    res.status(500).json({ msg: "Delete failed" });
+  }
+};
