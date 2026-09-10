@@ -19,6 +19,7 @@ const contactSchema = new mongoose.Schema(
       trim: true,
       unique: true, // rejects a second contact with the same applicationNumber
     },
+    premiumAmount: Number,
     nomineeName: String,
     nomineeDob: String,
     shortAddress: String,
