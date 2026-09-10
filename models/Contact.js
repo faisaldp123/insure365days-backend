@@ -13,7 +13,12 @@ const contactSchema = new mongoose.Schema(
     insuranceType: String,
     brandType: String,
     termAndPpt: String,
-    applicationNumber: String,
+    applicationNumber: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true, // rejects a second contact with the same applicationNumber
+    },
     nomineeName: String,
     nomineeDob: String,
     shortAddress: String,

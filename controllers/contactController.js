@@ -20,6 +20,20 @@ exports.saveContact = async (req, res) => {
       remarks,
     } = req.body;
 
+    // Reject up front if this applicationNumber has already been submitted.
+    if (applicationNumber) {
+      const existing = await Contact.findOne({
+        applicationNumber: String(applicationNumber).trim(),
+      }).select("_id");
+
+      if (existing) {
+        return res.status(409).json({
+          msg: "This application number has already been submitted.",
+          field: "applicationNumber",
+        });
+      }
+    }
+
     const contact = await Contact.create({
       name,
       email,
@@ -44,11 +58,42 @@ exports.saveContact = async (req, res) => {
 
     res.json(contact);
   } catch (err) {
+    // If two submissions race past the findOne check above at the exact
+    // same instant, the schema's unique index on applicationNumber still
+    // rejects the second insert with Mongo error code 11000. Translate
+    // that into the same 409 response.
+    if (err && err.code === 11000 && err.keyPattern && err.keyPattern.applicationNumber) {
+      return res.status(409).json({
+        msg: "This application number has already been submitted.",
+        field: "applicationNumber",
+      });
+    }
+
     console.error(err);
 
     res.status(500).json({
       msg: "Server error",
     });
+  }
+};
+
+// CHECK IF AN APPLICATION NUMBER ALREADY EXISTS
+exports.checkApplicationNumber = async (req, res) => {
+  try {
+    const { applicationNumber } = req.params;
+
+    if (!applicationNumber || !applicationNumber.trim()) {
+      return res.status(400).json({ msg: "applicationNumber is required" });
+    }
+
+    const existing = await Contact.findOne({
+      applicationNumber: applicationNumber.trim(),
+    }).select("_id");
+
+    res.json({ exists: Boolean(existing) });
+  } catch (err) {
+    console.error("CHECK APPLICATION NUMBER ERROR:", err);
+    res.status(500).json({ msg: "Server error" });
   }
 };
 
